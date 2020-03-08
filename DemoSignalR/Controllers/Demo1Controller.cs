@@ -10,19 +10,11 @@ namespace DemoSignalR.Controllers
 {
     public class Demo1Controller : Controller
     {
-
-        private readonly PreguntasService preguntasService;
-
-
-        public Demo1Controller(PreguntasService preguntasService)
-        {
-            this.preguntasService = preguntasService;
-        }
-
-
+        
         public IActionResult Index()
         {
-            return View(preguntasService.SiguientePregunta().GetAwaiter().GetResult());
+            return View();
         }
+
     }
 }

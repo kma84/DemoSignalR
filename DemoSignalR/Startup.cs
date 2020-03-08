@@ -59,7 +59,7 @@ namespace DemoSignalR
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Demo2}/{action=Index}/{id?}");
             });
         }
     }
