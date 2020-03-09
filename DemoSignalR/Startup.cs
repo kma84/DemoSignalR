@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DemoSignalR.Hubs;
 using DemoSignalR.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -60,6 +61,11 @@ namespace DemoSignalR
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Demo2}/{action=Index}/{id?}");
+            });
+
+            app.UseSignalR((routes) =>
+            {
+                routes.MapHub<MensajeHub>("/hubs/MensajeHub");
             });
         }
     }

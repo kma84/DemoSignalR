@@ -20,12 +20,12 @@ namespace DemoSignalR.Services
 		private string Token { get; set; }
 
 
-		public PreguntasService()
-		{
-			var pregunta = SiguientePregunta().GetAwaiter().GetResult();
+		//public PreguntasService()
+		//{
+		//	var pregunta = SiguientePregunta().GetAwaiter().GetResult();
 
-			Console.WriteLine(pregunta);
-		}
+		//	Console.WriteLine(pregunta);
+		//}
 
 
 		public async Task<Pregunta> SiguientePregunta()
