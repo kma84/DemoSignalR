@@ -66,6 +66,7 @@ namespace DemoSignalR
             app.UseSignalR((routes) =>
             {
                 routes.MapHub<MensajeHub>("/hubs/MensajeHub");
+                routes.MapHub<PreguntasHub>("/hubs/PreguntasHub");
             });
         }
     }

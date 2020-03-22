@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Web;
 
 namespace DemoSignalR.Models.OpenTDB
 {
-	public class Pregunta
+    public class Pregunta
 	{
 		public string category { get; set; }
 		public string type { get; set; }
@@ -13,7 +11,12 @@ namespace DemoSignalR.Models.OpenTDB
 		public string question { get; set; }
 		public string correct_answer { get; set; }
 		public List<string> incorrect_answers { get; set; }
-
+        
+        public string DecodeQuestion()
+        {
+            return HttpUtility.UrlDecode(question);
+        }
+        
 		public override string ToString()
 		{
 			return $"Categoría: {category}. Tipo: {type}. Dificultad: {difficulty}. Pregunta: {question}";

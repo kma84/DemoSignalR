@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DemoSignalR.Services;
-using Microsoft.AspNetCore.Mvc;
-using DemoSignalR.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DemoSignalR.Controllers
 {
