@@ -25,10 +25,33 @@
 
     <div class="container">
 
-        <button type="submit" class="btn btn-primary mb-2" id="btnSiguientePregunta">Siguiente Pregunta</button>
-
+        @*<button type="submit" class="btn btn-primary mb-2" id="btnSiguientePregunta">Siguiente Pregunta</button>*@
         @*<p>@Model.DecodeQuestion()</p>*@
 
+        <div class="card" id="panelPregunta" style="display:none">
+            <div class="card-header"></div>
+            <ul class="list-group list-group-flush"></ul>
+        </div>
+
+    </div>
+
+    <!-- Modal Nombre de usuario -->
+    <div class="modal fade" id="modalNombreUsuario" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalNombreUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNombreUsuarioLabel">@ViewData["Title"]</h5>
+                </div>
+                <div class="modal-body">
+
+                    <form class="form-inline">
+                        <input type="text" class="form-control mb-2 mr-sm-2" id="txtNombreUsuario" placeholder="Nombre de usuario">
+                        <button type="button" class="btn btn-primary mb-2" id="btnJugar">¡Jugar!</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Optional JavaScript -->
@@ -40,23 +63,58 @@
 
     <script type="text/javascript">
 
-        var connection = new signalR.HubConnectionBuilder()
-            .withUrl('/hubs/PreguntasHub')
-            .build();
+        $(function () {
 
-        connection.start()
-            .catch(function (error) {
-                console.error(error.message);
+            var nombreUsuario;
+
+            $('#modalNombreUsuario').modal('show');
+
+            $("#btnJugar").on("click", function () {
+                if ($("#txtNombreUsuario").val().length > 2) {
+                    nombreUsuario = $("#txtNombreUsuario").val();
+                    $('#modalNombreUsuario').modal('hide');
+
+                    conectarHub();
+                    $('#panelPregunta').show();
+                }
             });
 
-        connection.on("siguiente-pregunta", function (pregunta) {
-            alert(pregunta.question);
-        });
+            $('#modalNombreUsuario').on('hidden.bs.modal', function () {
+                $('#modalNombreUsuario').modal('dispose');
+            })
 
-        $("#btnSiguientePregunta").on("click", function () {
-            connection.invoke("SiguientePregunta");
+
+
+            //conectarHub();
+
+            function conectarHub() {
+                var connection = new signalR.HubConnectionBuilder()
+                    .withUrl('/hubs/PreguntasHub')
+                    .build();
+
+                connection.start()
+                    .then(function () {
+                        connection.invoke("SiguientePregunta");
+                    })
+                    .catch(function (error) {
+                        console.error(error.message);
+                    });
+
+                connection.on("siguiente-pregunta", function (pregunta) {
+
+                    $('#panelPregunta .card-header').html(pregunta.question);
+
+                });
+
+                
+
+                //$("#btnSiguientePregunta").on("click", function () {
+                //    connection.invoke("SiguientePregunta");
+                //});
+            };
+
         });
-        
+               
     </script>
 
 </body>

@@ -1,5 +1,4 @@
-﻿using DemoSignalR.Models.OpenTDB;
-using DemoSignalR.Services;
+﻿using DemoSignalR.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
@@ -17,10 +16,9 @@ namespace DemoSignalR.Hubs
         }
 
 
-        public Task SiguientePregunta()
+        public async Task SiguientePregunta()
         {
-            Pregunta siguientePregunta = preguntasService.SiguientePregunta().GetAwaiter().GetResult();
-            return Clients.All.SendAsync("siguiente-pregunta", siguientePregunta);
+            await Clients.All.SendAsync("siguiente-pregunta", await preguntasService.SiguientePregunta());
         }
 
     }
