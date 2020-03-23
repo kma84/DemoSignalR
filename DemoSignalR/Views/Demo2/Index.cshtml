@@ -104,6 +104,15 @@
 
                     $('#panelPregunta .card-header').html(pregunta.question);
 
+                    var respuestas = pregunta.incorrect_answers.slice();
+                    respuestas.push(pregunta.correct_answer);
+                    respuestas.sort();
+
+                    var respuestasHtml = $.map(respuestas, function (resp) {
+                        return "<li class='list-group-item'>" + resp + "</li>";
+                    });
+                    $("#panelPregunta .list-group").append(respuestasHtml);
+
                 });
 
                 

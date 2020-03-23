@@ -18,7 +18,7 @@ namespace DemoSignalR.Hubs
 
         public async Task SiguientePregunta()
         {
-            await Clients.All.SendAsync("siguiente-pregunta", await preguntasService.SiguientePregunta());
+            await Clients.Caller.SendAsync("siguiente-pregunta", await preguntasService.SiguientePregunta(Context.ConnectionId));
         }
 
     }

@@ -16,8 +16,8 @@ namespace DemoSignalR.Services
 		private readonly string resetPath = "https://opentdb.com/api_token.php?command=reset&token={0}";
 		private readonly int TOKEN_EMPTY = 4;
 
-		private List<Pregunta> Preguntas { get; set; } = new List<Pregunta>();
-		private string Token { get; set; }
+        private List<(Pregunta pregunta, List<string> enviadaA)> Preguntas { get; set; } = new List<(Pregunta, List<string>)>();
+        private string Token { get; set; }
 
 
 		//public PreguntasService()
@@ -28,14 +28,17 @@ namespace DemoSignalR.Services
 		//}
 
 
-		public async Task<Pregunta> SiguientePregunta()
+		public async Task<Pregunta> SiguientePregunta(string userId)
 		{
-			if (!Preguntas.Any())
+			if (Preguntas.All(p => p.enviadaA.Contains(userId)))
 			{
-				Preguntas.AddRange(await GetPreguntasAsync());
+				Preguntas.AddRange( (await GetPreguntasAsync()).Select( p => (p, new List<string>()) ) );
 			}
 
-			return Preguntas.FirstOrDefault();
+            (var siguientePregunta, var enviadaA) = Preguntas.FirstOrDefault(p => !p.enviadaA.Contains(userId));
+            enviadaA.Add(userId);
+
+            return siguientePregunta;
 		}
 
 
