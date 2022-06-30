@@ -14,6 +14,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/site.css" />
 
     <title>@ViewData["Title"]</title>
 </head>
@@ -31,6 +32,9 @@
         <div class="card" id="panelPregunta" style="display:none">
             <div class="card-header"></div>
             <ul class="list-group list-group-flush"></ul>
+            <div class="card-footer text-right">
+                <button type="button" class="btn btn-outline-dark" id="btnSiguientePregunta" disabled>Siguiente Pregunta</button>
+            </div>
         </div>
 
     </div>
@@ -44,7 +48,7 @@
                 </div>
                 <div class="modal-body">
 
-                    <form class="form-inline">
+                    <form class="form-inline" onsubmit="return false;">
                         <input type="text" class="form-control mb-2 mr-sm-2" id="txtNombreUsuario" placeholder="Nombre de usuario">
                         <button type="button" class="btn btn-primary mb-2" id="btnJugar">¡Jugar!</button>
                     </form>
@@ -66,6 +70,8 @@
         $(function () {
 
             var nombreUsuario;
+            var preguntaActual;
+            var hub;
 
             $('#modalNombreUsuario').modal('show');
 
@@ -74,7 +80,7 @@
                     nombreUsuario = $("#txtNombreUsuario").val();
                     $('#modalNombreUsuario').modal('hide');
 
-                    conectarHub();
+                    hub = conectarHub();
                     $('#panelPregunta').show();
                 }
             });
@@ -83,9 +89,29 @@
                 $('#modalNombreUsuario').modal('dispose');
             })
 
+            $("#panelPregunta").on("click", ".clickable-items li", function () {
 
+                // TODO revisar esta igualdad. Falla si la respuesta correcta contiene carácteres especiales
+                var respuestaCorrecta = $(this).html() === preguntaActual.correct_answer;
 
-            //conectarHub();
+                $(this).parent().removeClass('clickable-items');
+
+                $(this).addClass(respuestaCorrecta ? "list-group-item-success" : "list-group-item-danger");
+                $(this).siblings()
+                    .filter(function () { return $(this).html() === preguntaActual.correct_answer; })
+                    .addClass("list-group-item-success");
+
+                $('#btnSiguientePregunta').prop('disabled', (_, valor) => !valor);
+
+            });
+
+            $("#btnSiguientePregunta").on("click", function () {
+
+                hub.invoke("SiguientePregunta");
+                $('#btnSiguientePregunta').prop('disabled', (_, valor) => !valor);
+
+            });
+            
 
             function conectarHub() {
                 var connection = new signalR.HubConnectionBuilder()
@@ -101,25 +127,32 @@
                     });
 
                 connection.on("siguiente-pregunta", function (pregunta) {
-
-                    $('#panelPregunta .card-header').html(pregunta.question);
-
-                    var respuestas = pregunta.incorrect_answers.slice();
-                    respuestas.push(pregunta.correct_answer);
-                    respuestas.sort();
-
-                    var respuestasHtml = $.map(respuestas, function (resp) {
-                        return "<li class='list-group-item'>" + resp + "</li>";
-                    });
-                    $("#panelPregunta .list-group").append(respuestasHtml);
-
+                    preguntaActual = pregunta;
+                    cargarPregunta(pregunta);
                 });
 
-                
+                return connection;
+            };
 
-                //$("#btnSiguientePregunta").on("click", function () {
-                //    connection.invoke("SiguientePregunta");
-                //});
+
+            function cargarPregunta(pregunta) {
+
+                var ulPreguntas = $("#panelPregunta .list-group")
+
+                ulPreguntas.addClass('clickable-items');
+                ulPreguntas.empty();
+
+                $('#panelPregunta .card-header').html(pregunta.question);
+
+                var respuestas = pregunta.incorrect_answers.slice();
+                respuestas.push(pregunta.correct_answer);
+                respuestas.sort();
+
+                var respuestasHtml = $.map(respuestas, function (resp) {
+                    return "<li class='list-group-item'>" + resp + "</li>";
+                });
+                ulPreguntas.append(respuestasHtml);
+
             };
 
         });
