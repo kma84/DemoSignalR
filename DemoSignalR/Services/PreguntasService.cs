@@ -1,5 +1,5 @@
 ﻿using DemoSignalR.Models.OpenTDB;
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -71,7 +71,7 @@ namespace DemoSignalR.Services
 
 			if (response.IsSuccessStatusCode)
 			{
-				openTDBResponse = await response.Content.ReadAsAsync<T>();
+				openTDBResponse = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
 			}
 
 			return openTDBResponse;
