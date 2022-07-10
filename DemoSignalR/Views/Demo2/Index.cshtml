@@ -29,11 +29,52 @@
         @*<button type="submit" class="btn btn-primary mb-2" id="btnSiguientePregunta">Siguiente Pregunta</button>*@
         @*<p>@Model.DecodeQuestion()</p>*@
 
-        <div class="card" id="panelPregunta" style="display:none">
-            <div class="card-header"></div>
-            <ul class="list-group list-group-flush"></ul>
-            <div class="card-footer text-right">
-                <button type="button" class="btn btn-outline-dark" id="btnSiguientePregunta" disabled>Siguiente Pregunta</button>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="card" id="panelPregunta" style="display:none">
+                    <div class="card-header"></div>
+                    <ul class="list-group list-group-flush"></ul>
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-outline-dark" id="btnSiguientePregunta" disabled>Siguiente Pregunta</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card" id="panelJugadores" style="display:none">
+                    <div class="card-header">Jugadores</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row justify-content-start">
+                                <div class="col-4">
+                                    <strong>Sergio</strong> 
+                                </div>
+                                <div class="col-4">
+                                    <span class="badge badge-pill badge-success">30</span>
+                                    <span class="badge badge-pill badge-danger">0</span>
+                                </div>
+                            </div>                            
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row justify-content-start">
+                                <div class="col-4">Kma</div>
+                                <div class="col-4">
+                                    <span class="badge badge-pill badge-success">30</span>
+                                    <span class="badge badge-pill badge-danger">0</span>
+                                </div>
+                            </div>                            
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row justify-content-start">
+                                <div class="col-4">Anarky</div>
+                                <div class="col-4">
+                                    <span class="badge badge-pill badge-success">30</span>
+                                    <span class="badge badge-pill badge-danger">0</span>
+                                </div>
+                            </div>                            
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -81,7 +122,7 @@
                     $('#modalNombreUsuario').modal('hide');
 
                     hub = conectarHub();
-                    $('#panelPregunta').show();
+                    $('#panelPregunta, #panelJugadores').show();
                 }
             });
 
