@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace DemoSignalR.Models.OpenTDB
 {
     public class TokenResponse : BaseResponse
     {
-        public string token { get; set; }
-        public string response_message { get; set; }
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("response_message")]
+        public string ResponseMessage { get; set; }
     }
 }

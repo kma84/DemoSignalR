@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DemoSignalR.Models.OpenTDB
 {
     public class PreguntasResponse : BaseResponse
     {
-        public List<Pregunta> results { get; set; }
+        [JsonProperty("results")]
+        public List<Pregunta> Results { get; set; }
     }
 }

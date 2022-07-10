@@ -1,25 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Web;
 
 namespace DemoSignalR.Models.OpenTDB
 {
     public class Pregunta
 	{
-		public string category { get; set; }
-		public string type { get; set; }
-		public string difficulty { get; set; }
-		public string question { get; set; }
-		public string correct_answer { get; set; }
-		public List<string> incorrect_answers { get; set; }
+		[JsonProperty("category")]
+		public string Category { get; set; }
+
+		[JsonProperty("type")]
+		public string Type { get; set; }
+
+		[JsonProperty("difficulty")]
+		public string Difficulty { get; set; }
+
+		[JsonProperty("question")]
+		public string Question { get; set; }
+
+		[JsonProperty("correct_answer")]
+		public string CorrectAnswer { get; set; }
+
+		[JsonProperty("incorrect_answers")]
+		public List<string> IncorrectAnswers { get; set; }
         
         public string DecodeQuestion()
         {
-            return HttpUtility.UrlDecode(question);
+            return HttpUtility.UrlDecode(Question);
         }
         
 		public override string ToString()
 		{
-			return $"Categoría: {category}. Tipo: {type}. Dificultad: {difficulty}. Pregunta: {question}";
+			return $"Categoría: {Category}. Tipo: {Type}. Dificultad: {Difficulty}. Pregunta: {Question}";
 		}
 	}
 }

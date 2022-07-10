@@ -1,13 +1,15 @@
 ﻿using DemoSignalR.Models.OpenTDB;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DemoSignalR.Services
 {
-    public class PreguntasService
+    public class PreguntasService : IDisposable
     {
         private readonly HttpClient httpClient = new HttpClient();
 
@@ -47,20 +49,20 @@ namespace DemoSignalR.Services
 			if (string.IsNullOrWhiteSpace(Token))
 			{
 				TokenResponse tokenResponse = await GetResponse<TokenResponse>(tokenPath);
-				Token = tokenResponse.token;
+				Token = tokenResponse.Token;
 			}
 
-			PreguntasResponse preguntasResponse = await GetResponse<PreguntasResponse>(string.Format(preguntasPath, Token));
+			PreguntasResponse preguntasResponse = await GetResponse<PreguntasResponse>(string.Format(CultureInfo.InvariantCulture, preguntasPath, Token));
 
-			if (preguntasResponse.response_code == TOKEN_EMPTY)
+			if (preguntasResponse.ResponseCode == TOKEN_EMPTY)
 			{
-				TokenResponse tokenResetResponse = await GetResponse<TokenResponse>(string.Format(resetPath, Token));
-				Token = tokenResetResponse.token;
+				TokenResponse tokenResetResponse = await GetResponse<TokenResponse>(string.Format(CultureInfo.InvariantCulture, resetPath, Token));
+				Token = tokenResetResponse.Token;
 
-				preguntasResponse = await GetResponse<PreguntasResponse>(string.Format(preguntasPath, Token));
+				preguntasResponse = await GetResponse<PreguntasResponse>(string.Format(CultureInfo.InvariantCulture, preguntasPath, Token));
 			}
 
-			return preguntasResponse.results;
+			return preguntasResponse.Results;
 		}
 
 
@@ -77,5 +79,10 @@ namespace DemoSignalR.Services
 			return openTDBResponse;
 		}
 
-	}
+        public void Dispose()
+        {
+			GC.SuppressFinalize(this);
+            httpClient.Dispose();
+        }
+    }
 }

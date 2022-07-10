@@ -92,13 +92,13 @@
             $("#panelPregunta").on("click", ".clickable-items li", function () {
 
                 // TODO revisar esta igualdad. Falla si la respuesta correcta contiene carácteres especiales
-                var respuestaCorrecta = $(this).html() === preguntaActual.correct_answer;
+                var respuestaCorrecta = $(this).html() === preguntaActual.correctAnswer;
 
                 $(this).parent().removeClass('clickable-items');
 
                 $(this).addClass(respuestaCorrecta ? "list-group-item-success" : "list-group-item-danger");
                 $(this).siblings()
-                    .filter(function () { return $(this).html() === preguntaActual.correct_answer; })
+                    .filter(function () { return $(this).html() === preguntaActual.correctAnswer; })
                     .addClass("list-group-item-success");
 
                 $('#btnSiguientePregunta').prop('disabled', (_, valor) => !valor);
@@ -144,8 +144,8 @@
 
                 $('#panelPregunta .card-header').html(pregunta.question);
 
-                var respuestas = pregunta.incorrect_answers.slice();
-                respuestas.push(pregunta.correct_answer);
+                var respuestas = pregunta.incorrectAnswers.slice();
+                respuestas.push(pregunta.correctAnswer);
                 respuestas.sort();
 
                 var respuestasHtml = $.map(respuestas, function (resp) {
