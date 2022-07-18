@@ -9,7 +9,7 @@ namespace DemoSignalR.Hubs
     public class MensajeHub : Hub
     {
 
-        private static int usuariosConectados = 0;
+        private static int usuariosConectados;
 
         public override Task OnConnectedAsync()
         {

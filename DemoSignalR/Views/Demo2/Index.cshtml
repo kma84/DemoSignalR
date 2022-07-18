@@ -1,5 +1,4 @@
 ﻿
-@*@model DemoSignalR.Models.OpenTDB.Pregunta*@
 @{
     Layout = null;
     ViewData["Title"] = "Demo2";
@@ -26,9 +25,6 @@
 
     <div class="container">
 
-        @*<button type="submit" class="btn btn-primary mb-2" id="btnSiguientePregunta">Siguiente Pregunta</button>*@
-        @*<p>@Model.DecodeQuestion()</p>*@
-
         <div class="row">
             <div class="col-sm-8">
                 <div class="card" id="panelPregunta" style="display:none">
@@ -44,35 +40,6 @@
                 <div class="card" id="panelJugadores" style="display:none">
                     <div class="card-header">Jugadores</div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="row justify-content-start">
-                                <div class="col-4">
-                                    <strong>Sergio</strong> 
-                                </div>
-                                <div class="col-4">
-                                    <span class="badge badge-pill badge-success">30</span>
-                                    <span class="badge badge-pill badge-danger">0</span>
-                                </div>
-                            </div>                            
-                        </li>
-                        <li class="list-group-item">
-                            <div class="row justify-content-start">
-                                <div class="col-4">Kma</div>
-                                <div class="col-4">
-                                    <span class="badge badge-pill badge-success">30</span>
-                                    <span class="badge badge-pill badge-danger">0</span>
-                                </div>
-                            </div>                            
-                        </li>
-                        <li class="list-group-item">
-                            <div class="row justify-content-start">
-                                <div class="col-4">Anarky</div>
-                                <div class="col-4">
-                                    <span class="badge badge-pill badge-success">30</span>
-                                    <span class="badge badge-pill badge-danger">0</span>
-                                </div>
-                            </div>                            
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -142,6 +109,8 @@
                     .filter(function () { return $(this).html() === preguntaActual.correctAnswer; })
                     .addClass("list-group-item-success");
 
+                añadirPuntuacion(nombreUsuario, respuestaCorrecta);
+
                 $('#btnSiguientePregunta').prop('disabled', (_, valor) => !valor);
 
             });
@@ -161,6 +130,7 @@
 
                 connection.start()
                     .then(function () {
+                        connection.invoke("JugadorNuevo", nombreUsuario);
                         connection.invoke("SiguientePregunta");
                     })
                     .catch(function (error) {
@@ -172,7 +142,57 @@
                     cargarPregunta(pregunta);
                 });
 
+                connection.on("jugador-nuevo", function (jugador) {
+                    var jugadorActual = jugador === nombreUsuario;
+                    añadirJugador(jugador, 0, 0, jugadorActual);
+                    
+                    if (jugadorActual) {
+                        // Es la primera carga del jugador actual, obtenemos el resto de jugadores
+                        connection.invoke("ObtenerJugadores");
+                    }
+                });
+                
+                //connection.on("jugador-desconectado", function (count) {
+                //    //$("#labelUsuariosConectados").text("Usuarios conectados: " + count);
+                //});
+
+                connection.on("jugadores", function (jugadores) {
+                    jugadores.filter((j) => j !== nombreUsuario)
+                             .forEach((j) => añadirJugador(j, 0, 0, false));
+                });
+
                 return connection;
+            };
+
+
+            function añadirJugador(jugador, numAciertos, numErrores, jugadorEsUsuarioActual) {
+
+                var jugadorStr = jugadorEsUsuarioActual ? `<strong>${jugador}</strong>` : jugador;
+
+                const item = `
+                    <li class="list-group-item" id="row-${jugador}">
+	                    <div class="row justify-content-start">
+		                    <div class="col-4">${jugadorStr}</div>
+		                    <div class="col-4">
+			                    <span class="badge badge-pill badge-success">${numAciertos}</span>
+			                    <span class="badge badge-pill badge-danger">${numErrores}</span>
+		                    </div>
+	                    </div>
+                    </li>
+                    `;
+                
+                var ulJugadores = $("#panelJugadores .list-group");
+
+                ulJugadores.append(item);
+            };
+
+
+            function añadirPuntuacion(jugador, respuestaCorrecta) {
+                
+                var tipoBadge = respuestaCorrecta ? "success" : "danger";
+                var badge = $(`#row-${jugador} .badge-${tipoBadge}`);
+
+                badge.html(+badge.html() + 1);
             };
 
 
@@ -193,7 +213,6 @@
                     return "<li class='list-group-item'>" + resp + "</li>";
                 });
                 ulPreguntas.append(respuestasHtml);
-
             };
 
         });
