@@ -13,5 +13,7 @@ namespace DemoSignalR.Models
         [JsonProperty("preguntasFalladas")]
         public int PreguntasFalladas { get; set; }
 
+        [JsonIgnore]
+        public string ConnectionId { get; internal set; }
     }
 }

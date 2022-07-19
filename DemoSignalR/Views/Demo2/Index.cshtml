@@ -152,9 +152,9 @@
                     }
                 });
                 
-                //connection.on("jugador-desconectado", function (count) {
-                //    //$("#labelUsuariosConectados").text("Usuarios conectados: " + count);
-                //});
+                connection.on("jugador-desconectado", function (jugador) {
+                    $("#row-" + jugador).remove();
+                });
 
                 connection.on("jugadores", function (jugadores) {
                     jugadores.filter((j) => j.nombre !== nombreUsuario)

@@ -1,6 +1,7 @@
-﻿using DemoSignalR.Services;
+﻿using DemoSignalR.Models;
+using DemoSignalR.Services;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace DemoSignalR.Hubs
@@ -18,11 +19,13 @@ namespace DemoSignalR.Hubs
         //    return Clients.All.SendAsync("usuario-conectado", usuariosConectados);
         //}
 
-        //public override Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    usuariosConectados--;
-        //    return Clients.All.SendAsync("usuario-desconectado", usuariosConectados);
-        //}
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            Jugador jugador = jugadoresService.GetByConnectionId(Context.ConnectionId);
+            jugadoresService.EliminarJugador(jugador);
+
+            return Clients.All.SendAsync("jugador-desconectado", jugador.Nombre);
+        }
 
         public PreguntasHub(PreguntasService preguntasService, JugadoresService jugadoresService)
         {
@@ -39,7 +42,7 @@ namespace DemoSignalR.Hubs
 
         public async Task JugadorNuevo(string jugador)
         {
-            if (jugadoresService.TryAdd(jugador))
+            if (jugadoresService.TryAdd(jugador, Context.ConnectionId))
             {
                 await Clients.All.SendAsync("jugador-nuevo", jugador);
             }
