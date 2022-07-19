@@ -109,7 +109,7 @@
                     .filter(function () { return $(this).html() === preguntaActual.correctAnswer; })
                     .addClass("list-group-item-success");
 
-                añadirPuntuacion(nombreUsuario, respuestaCorrecta);
+                hub.invoke("AñadirPuntuacion", nombreUsuario, respuestaCorrecta);
 
                 $('#btnSiguientePregunta').prop('disabled', (_, valor) => !valor);
 
@@ -157,8 +157,12 @@
                 //});
 
                 connection.on("jugadores", function (jugadores) {
-                    jugadores.filter((j) => j !== nombreUsuario)
-                             .forEach((j) => añadirJugador(j, 0, 0, false));
+                    jugadores.filter((j) => j.nombre !== nombreUsuario)
+                             .forEach((j) => añadirJugador(j.nombre, j.preguntasAcertadas, j.preguntasFalladas, false));
+                });
+
+                connection.on("añadir-puntuacion", function (jugador, preguntaAcertada) {
+                    añadirPuntuacion(jugador, preguntaAcertada);
                 });
 
                 return connection;

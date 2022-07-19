@@ -51,5 +51,12 @@ namespace DemoSignalR.Hubs
             await Clients.Caller.SendAsync("jugadores", jugadoresService.ObtenerJugadores());
         }
 
+
+        public async Task AñadirPuntuacion(string jugador, bool preguntaAcertada)
+        {
+            jugadoresService.AñadirPuntuacion(jugador, preguntaAcertada);
+            await Clients.All.SendAsync("añadir-puntuacion", jugador, preguntaAcertada);
+        }
+
     }
 }
