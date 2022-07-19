@@ -56,6 +56,10 @@
                 </div>
                 <div class="modal-body">
 
+                    <div id="alert-jugador-ya-existe" class="alert alert-danger" role="alert" style="display:none">
+                        El nombre de jugador introducido ya existe
+                    </div>
+
                     <form class="form-inline" onsubmit="return false;">
                         <input type="text" class="form-control mb-2 mr-sm-2" id="txtNombreUsuario" placeholder="Nombre de usuario">
                         <button type="button" class="btn btn-primary mb-2" id="btnJugar">¡Jugar!</button>
@@ -79,17 +83,16 @@
 
             var nombreUsuario;
             var preguntaActual;
-            var hub;
+
+            var hub = conectarHub();
 
             $('#modalNombreUsuario').modal('show');
 
             $("#btnJugar").on("click", function () {
                 if ($("#txtNombreUsuario").val().length > 2) {
                     nombreUsuario = $("#txtNombreUsuario").val();
-                    $('#modalNombreUsuario').modal('hide');
-
-                    hub = conectarHub();
-                    $('#panelPregunta, #panelJugadores').show();
+                                       
+                    empezarPartida();
                 }
             });
 
@@ -129,10 +132,6 @@
                     .build();
 
                 connection.start()
-                    .then(function () {
-                        connection.invoke("JugadorNuevo", nombreUsuario);
-                        connection.invoke("SiguientePregunta");
-                    })
                     .catch(function (error) {
                         console.error(error.message);
                     });
@@ -149,7 +148,16 @@
                     if (jugadorActual) {
                         // Es la primera carga del jugador actual, obtenemos el resto de jugadores
                         connection.invoke("ObtenerJugadores");
+                        connection.invoke("SiguientePregunta");  
+                                                
+                        $('#modalNombreUsuario').modal('hide');
+                        $('#panelPregunta, #panelJugadores').show();
+                        $("#alert-jugador-ya-existe").hide();
                     }
+                });
+
+                connection.on("jugador-ya-existe", function () {
+                    $("#alert-jugador-ya-existe").show();
                 });
                 
                 connection.on("jugador-desconectado", function (jugador) {
@@ -169,6 +177,11 @@
             };
 
 
+            function empezarPartida() {
+                hub.invoke("JugadorNuevo", nombreUsuario);
+            };
+
+
             function añadirJugador(jugador, numAciertos, numErrores, jugadorEsUsuarioActual) {
 
                 var jugadorStr = jugadorEsUsuarioActual ? `<strong>${jugador}</strong>` : jugador;
@@ -176,8 +189,8 @@
                 const item = `
                     <li class="list-group-item" id="row-${jugador}">
 	                    <div class="row justify-content-start">
-		                    <div class="col-4">${jugadorStr}</div>
-		                    <div class="col-4">
+		                    <div class="col-auto">${jugadorStr}</div>
+		                    <div class="col-auto">
 			                    <span class="badge badge-pill badge-success">${numAciertos}</span>
 			                    <span class="badge badge-pill badge-danger">${numErrores}</span>
 		                    </div>

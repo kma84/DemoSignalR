@@ -13,18 +13,18 @@ namespace DemoSignalR.Hubs
         private readonly JugadoresService jugadoresService;
 
 
-        //public override Task OnConnectedAsync()
-        //{
-        //    usuariosConectados++;
-        //    return Clients.All.SendAsync("usuario-conectado", usuariosConectados);
-        //}
-
         public override Task OnDisconnectedAsync(Exception exception)
         {
             Jugador jugador = jugadoresService.GetByConnectionId(Context.ConnectionId);
-            jugadoresService.EliminarJugador(jugador);
 
-            return Clients.All.SendAsync("jugador-desconectado", jugador.Nombre);
+            if (jugador != null)
+            {
+                jugadoresService.EliminarJugador(jugador);
+
+                return Clients.All.SendAsync("jugador-desconectado", jugador.Nombre);
+            }
+
+            return Task.CompletedTask;
         }
 
         public PreguntasHub(PreguntasService preguntasService, JugadoresService jugadoresService)
@@ -45,6 +45,10 @@ namespace DemoSignalR.Hubs
             if (jugadoresService.TryAdd(jugador, Context.ConnectionId))
             {
                 await Clients.All.SendAsync("jugador-nuevo", jugador);
+            }
+            else
+            {
+                await Clients.All.SendAsync("jugador-ya-existe");
             }
         }
 

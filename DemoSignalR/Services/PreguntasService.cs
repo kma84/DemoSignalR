@@ -22,14 +22,6 @@ namespace DemoSignalR.Services
         private string Token { get; set; }
 
 
-		//public PreguntasService()
-		//{
-		//	var pregunta = SiguientePregunta().GetAwaiter().GetResult();
-
-		//	Console.WriteLine(pregunta);
-		//}
-
-
 		public async Task<Pregunta> SiguientePregunta(string userId)
 		{
 			if (Preguntas.All(p => p.enviadaA.Contains(userId)))
